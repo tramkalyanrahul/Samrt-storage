@@ -3,635 +3,846 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Weather App - Complete</title>
+    <title>Smart Onion Storage - IoT Dashboard</title>
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
-
+        
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
-            color: #333;
+            overflow-x: hidden;
         }
-
+        
         .container {
-            max-width: 400px;
+            max-width: 1200px;
             margin: 0 auto;
-            padding: 20px 15px;
+            padding: 20px;
         }
-
-        /* Page System */
-        .page {
-            display: none;
-            animation: fadeIn 0.5s ease-in-out;
-        }
-
-        .page.active {
-            display: block;
-        }
-
-        /* Navigation */
-        .nav-bar {
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
-            border-radius: 25px;
-            padding: 10px;
-            margin-bottom: 20px;
-            display: flex;
-            justify-content: space-around;
-            position: sticky;
-            top: 20px;
-            z-index: 100;
-        }
-
-        .nav-btn {
-            background: none;
-            border: none;
-            color: rgba(255, 255, 255, 0.7);
-            padding: 10px 15px;
-            border-radius: 20px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            font-size: 0.9rem;
-        }
-
-        .nav-btn.active, .nav-btn:hover {
-            background: rgba(255, 255, 255, 0.2);
-            color: white;
-        }
-
-        /* Login Page */
+        
+        /* Login Page Styles */
         .login-container {
-            text-align: center;
-            padding: 40px 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         }
-
-        .login-title {
-            color: white;
-            font-size: 2.5rem;
-            margin-bottom: 10px;
-            font-weight: 300;
-        }
-
-        .login-subtitle {
-            color: rgba(255, 255, 255, 0.8);
-            margin-bottom: 40px;
-            font-size: 1rem;
-        }
-
-        .login-form {
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
+        
+        .login-box {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 40px;
             border-radius: 20px;
-            padding: 30px;
-            margin-bottom: 20px;
-        }
-
-        .form-group {
-            margin-bottom: 20px;
-            text-align: left;
-        }
-
-        .form-label {
-            color: white;
-            font-size: 0.9rem;
-            margin-bottom: 8px;
-            display: block;
-        }
-
-        .form-input {
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
             width: 100%;
-            padding: 12px 15px;
-            border: none;
+            max-width: 400px;
+            animation: slideUp 0.8s ease-out;
+        }
+        
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .login-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .login-header h1 {
+            color: #2c3e50;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+        
+        .login-header p {
+            color: #7f8c8d;
+            font-size: 1.1em;
+        }
+        
+        .form-group {
+            margin-bottom: 25px;
+        }
+        
+        .form-group label {
+            display: block;
+            color: #2c3e50;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+        
+        .form-group input {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e9ecef;
             border-radius: 10px;
-            background: rgba(255, 255, 255, 0.9);
-            font-size: 1rem;
+            font-size: 16px;
             transition: all 0.3s ease;
+            background: #f8f9fa;
         }
-
-        .form-input:focus {
+        
+        .form-group input:focus {
             outline: none;
-            box-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
+            border-color: #667eea;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
         }
-
+        
         .login-btn {
             width: 100%;
-            background: linear-gradient(45deg, #667eea, #764ba2);
-            border: none;
-            color: white;
             padding: 15px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
             border-radius: 10px;
-            font-size: 1rem;
+            font-size: 16px;
+            font-weight: 600;
             cursor: pointer;
             transition: all 0.3s ease;
-        }
-
-        .login-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-        }
-
-        /* Dashboard Styles */
-        .header {
-            text-align: center;
-            margin-bottom: 30px;
-            animation: fadeInDown 0.8s ease-out;
-        }
-
-        .header h1 {
-            font-size: 2rem;
-            color: white;
-            margin-bottom: 10px;
-            font-weight: 300;
-        }
-
-        .header p {
-            color: rgba(255, 255, 255, 0.8);
-            font-size: 1rem;
-        }
-
-        /* Mobile 2x2 Weather Grid */
-        .weather-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
-            margin-bottom: 30px;
-        }
-
-        .weather-card {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            border-radius: 20px;
-            padding: 20px 15px;
-            text-align: center;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-            transition: all 0.3s ease;
-            animation: fadeInUp 0.8s ease-out;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .weather-card:nth-child(1) { animation-delay: 0.1s; }
-        .weather-card:nth-child(2) { animation-delay: 0.2s; }
-        .weather-card:nth-child(3) { animation-delay: 0.3s; }
-        .weather-card:nth-child(4) { animation-delay: 0.4s; }
-
-        .weather-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
-        }
-
-        .weather-icon {
-            font-size: 2.5rem;
-            margin-bottom: 15px;
-            display: block;
-        }
-
-        .weather-value {
-            font-size: 1.8rem;
-            font-weight: 600;
-            color: #333;
-            margin-bottom: 8px;
-        }
-
-        .weather-label {
-            font-size: 0.75rem;
-            color: #999;
             text-transform: uppercase;
             letter-spacing: 1px;
-            margin-bottom: 10px;
-            font-weight: 500;
         }
-
-        .weather-status {
-            font-size: 0.8rem;
-            padding: 4px 12px;
-            border-radius: 15px;
-            font-weight: 500;
-        }
-
-        .status-optimal {
-            background: rgba(33, 150, 243, 0.1);
-            color: #2196f3;
-        }
-
-        .status-increase {
-            background: rgba(76, 175, 80, 0.1);
-            color: #4caf50;
-        }
-
-        .status-normal {
-            background: rgba(33, 150, 243, 0.1);
-            color: #2196f3;
-        }
-
-        .status-good {
-            background: rgba(76, 175, 80, 0.1);
-            color: #4caf50;
-        }
-
-        /* Settings Page */
-        .settings-container {
-            color: white;
-        }
-
-        .settings-title {
-            font-size: 2rem;
-            margin-bottom: 30px;
-            text-align: center;
-            font-weight: 300;
-        }
-
-        .setting-item {
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
-            border-radius: 15px;
-            padding: 20px;
-            margin-bottom: 15px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .setting-info h3 {
-            font-size: 1.1rem;
-            margin-bottom: 5px;
-        }
-
-        .setting-info p {
-            font-size: 0.9rem;
-            opacity: 0.8;
-        }
-
-        .toggle-switch {
-            width: 50px;
-            height: 25px;
-            background: rgba(255, 255, 255, 0.3);
-            border-radius: 25px;
-            position: relative;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .toggle-switch.active {
-            background: #4caf50;
-        }
-
-        .toggle-slider {
-            width: 21px;
-            height: 21px;
-            background: white;
-            border-radius: 50%;
-            position: absolute;
-            top: 2px;
-            left: 2px;
-            transition: all 0.3s ease;
-        }
-
-        .toggle-switch.active .toggle-slider {
-            left: 27px;
-        }
-
-        /* Profile Page */
-        .profile-container {
-            color: white;
-            text-align: center;
-        }
-
-        .profile-avatar {
-            width: 100px;
-            height: 100px;
-            background: linear-gradient(45deg, #667eea, #764ba2);
-            border-radius: 50%;
-            margin: 0 auto 20px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 2.5rem;
-            color: white;
-        }
-
-        .profile-info {
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
-            border-radius: 20px;
-            padding: 30px;
-            margin-bottom: 20px;
-        }
-
-        .profile-name {
-            font-size: 1.5rem;
-            margin-bottom: 10px;
-        }
-
-        .profile-email {
-            opacity: 0.8;
-            margin-bottom: 20px;
-        }
-
-        .profile-stats {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 20px;
-            text-align: center;
-        }
-
-        .stat-item h3 {
-            font-size: 1.5rem;
-            color: #4fc3f7;
-        }
-
-        .stat-item p {
-            font-size: 0.9rem;
-            opacity: 0.8;
-        }
-
-        .refresh-btn {
-            background: rgba(255, 255, 255, 0.2);
-            border: none;
-            color: white;
-            padding: 12px 24px;
-            border-radius: 25px;
-            font-size: 0.9rem;
-            cursor: pointer;
-            margin-top: 15px;
-            transition: all 0.3s ease;
-            backdrop-filter: blur(10px);
-        }
-
-        .refresh-btn:hover {
-            background: rgba(255, 255, 255, 0.3);
+        
+        .login-btn:hover {
             transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
         }
-
-        /* Animations */
+        
+        /* Dashboard Styles */
+        .dashboard {
+            display: none;
+            animation: fadeIn 0.8s ease-out;
+        }
+        
         @keyframes fadeIn {
             from { opacity: 0; }
             to { opacity: 1; }
         }
-
-        @keyframes fadeInDown {
+        
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 20px 30px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        
+        .header h1 {
+            color: #2c3e50;
+            font-size: 2.2em;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .status-indicator {
+            width: 15px;
+            height: 15px;
+            border-radius: 50%;
+            background: #27ae60;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(39, 174, 96, 0.7); }
+            70% { box-shadow: 0 0 0 10px rgba(39, 174, 96, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(39, 174, 96, 0); }
+        }
+        
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+        
+        .logout-btn {
+            padding: 10px 20px;
+            background: #e74c3c;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        .logout-btn:hover {
+            background: #c0392b;
+            transform: translateY(-2px);
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+        
+        .stat-card {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+            text-align: center;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--accent-color);
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+        }
+        
+        .stat-card.temperature { --accent-color: #e74c3c; }
+        .stat-card.humidity { --accent-color: #3498db; }
+        .stat-card.pressure { --accent-color: #9b59b6; }
+        .stat-card.air-quality { --accent-color: #27ae60; }
+        
+        .stat-icon {
+            font-size: 2.5em;
+            margin-bottom: 15px;
+            color: var(--accent-color);
+        }
+        
+        .stat-value {
+            font-size: 2.5em;
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+        
+        .stat-label {
+            color: #7f8c8d;
+            font-size: 1.1em;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .stat-trend {
+            margin-top: 10px;
+            font-size: 0.9em;
+            padding: 5px 10px;
+            border-radius: 20px;
+            display: inline-block;
+        }
+        
+        .trend-up { background: #d5f4e6; color: #27ae60; }
+        .trend-down { background: #ffeaea; color: #e74c3c; }
+        .trend-stable { background: #e3f2fd; color: #2196f3; }
+        
+        .controls-section {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+            margin-bottom: 30px;
+        }
+        
+        .controls-section h2 {
+            color: #2c3e50;
+            margin-bottom: 25px;
+            font-size: 1.8em;
+        }
+        
+        .controls-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+        
+        .control-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+        }
+        
+        .control-item:hover {
+            background: #e9ecef;
+            transform: translateX(5px);
+        }
+        
+        .control-label {
+            font-weight: 600;
+            color: #2c3e50;
+        }
+        
+        .toggle-switch {
+            position: relative;
+            width: 60px;
+            height: 30px;
+            background: #ccc;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .toggle-switch.active {
+            background: #27ae60;
+        }
+        
+        .toggle-switch::after {
+            content: '';
+            position: absolute;
+            top: 3px;
+            left: 3px;
+            width: 24px;
+            height: 24px;
+            background: white;
+            border-radius: 50%;
+            transition: all 0.3s ease;
+        }
+        
+        .toggle-switch.active::after {
+            left: 33px;
+        }
+        
+        .chart-container {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+            margin-bottom: 30px;
+        }
+        
+        .chart-container h2 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+        }
+        
+        .chart {
+            height: 300px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #7f8c8d;
+            font-size: 1.2em;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .chart-placeholder {
+            text-align: center;
+        }
+        
+        .alerts-section {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+        }
+        
+        .alerts-section h2 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+        }
+        
+        .alert-item {
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-radius: 10px;
+            animation: slideIn 0.5s ease-out;
+        }
+        
+        @keyframes slideIn {
             from {
                 opacity: 0;
-                transform: translateY(-30px);
+                transform: translateX(-20px);
             }
             to {
                 opacity: 1;
-                transform: translateY(0);
+                transform: translateX(0);
             }
         }
-
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+        
+        .alert-success { background: #d5f4e6; border-left: 4px solid #27ae60; }
+        .alert-warning { background: #fff3cd; border-left: 4px solid #f39c12; }
+        .alert-danger { background: #ffeaea; border-left: 4px solid #e74c3c; }
+        
+        .alert-icon {
+            margin-right: 15px;
+            font-size: 1.5em;
         }
-
-        /* Mobile Responsive */
-        @media (max-width: 480px) {
+        
+        .alert-content {
+            flex: 1;
+        }
+        
+        .alert-title {
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+        
+        .alert-time {
+            color: #7f8c8d;
+            font-size: 0.9em;
+        }
+        
+        .mobile-menu {
+            display: none;
+        }
+        
+        @media (max-width: 768px) {
             .container {
-                padding: 15px 10px;
+                padding: 10px;
             }
             
-            .weather-grid {
-                gap: 12px;
+            .header {
+                flex-direction: column;
+                gap: 15px;
+                text-align: center;
             }
             
-            .weather-card {
-                padding: 15px 10px;
+            .header h1 {
+                font-size: 1.8em;
             }
             
-            .weather-value {
-                font-size: 1.6rem;
+            .stats-grid {
+                grid-template-columns: 1fr;
             }
             
-            .weather-icon {
-                font-size: 2rem;
-                margin-bottom: 10px;
+            .controls-grid {
+                grid-template-columns: 1fr;
             }
+        }
+        
+        /* Loading Animation */
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255,255,255,.3);
+            border-radius: 50%;
+            border-top-color: #fff;
+            animation: spin 1s ease-in-out infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <!-- Navigation (hidden on login) -->
-        <nav class="nav-bar" id="navigation" style="display: none;">
-            <button class="nav-btn active" onclick="showPage('dashboard')">🏠 Home</button>
-            <button class="nav-btn" onclick="showPage('settings')">⚙️ Settings</button>
-            <button class="nav-btn" onclick="showPage('profile')">👤 Profile</button>
-            <button class="nav-btn" onclick="logout()">🚪 Logout</button>
-        </nav>
-
-        <!-- Login Page -->
-        <div class="page active" id="login">
-            <div class="login-container">
-                <h1 class="login-title">Weather App</h1>
-                <p class="login-subtitle">Your personal weather companion</p>
-                
-                <div class="login-form">
-                    <div class="form-group">
-                        <label class="form-label">Email</label>
-                        <input type="email" class="form-input" placeholder="Enter your email" required>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label class="form-label">Password</label>
-                        <input type="password" class="form-input" placeholder="Enter your password" required>
-                    </div>
-                    
-                    <button class="login-btn" onclick="login()">Sign In</button>
+    <!-- Login Page -->
+    <div id="loginPage" class="login-container">
+        <div class="login-box">
+            <div class="login-header">
+                <h1>🧅 Smart Storage</h1>
+                <p>IoT-Enabled Onion Storage Monitoring</p>
+            </div>
+            <form id="loginForm">
+                <div class="form-group">
+                    <label for="username">Username</label>
+                    <input type="text" id="username" name="username" placeholder="Enter your username" required>
                 </div>
-                
-                <p style="color: rgba(255,255,255,0.7); font-size: 0.9rem;">
-                    Demo: Use any email/password to continue
-                </p>
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" name="password" placeholder="Enter your password" required>
+                </div>
+                <button type="submit" class="login-btn">
+                    <span id="loginText">Login</span>
+                    <span id="loginLoader" class="loading" style="display: none;"></span>
+                </button>
+                <div id="errorMessage" style="display: none; margin-top: 15px; padding: 12px; background: #ffeaea; border: 1px solid #e74c3c; border-radius: 8px; color: #c0392b; text-align: center; font-weight: 600;">
+                    Invalid username or password. Please try again.
+                </div>
+            </form>
+            <div style="margin-top: 20px; text-align: center; color: #7f8c8d; font-size: 0.9em;">
+                <p>Demo Credentials:</p>
+                <p><strong>Username:</strong> admin | <strong>Password:</strong> admin123</p>
+                <p><strong>Username:</strong> farmer | <strong>Password:</strong> farmer123</p>
             </div>
         </div>
+    </div>
 
-        <!-- Dashboard Page -->
-        <div class="page" id="dashboard">
+    <!-- Dashboard -->
+    <div id="dashboard" class="dashboard">
+        <div class="container">
+            <!-- Header -->
             <div class="header">
-                <h1>Weather Dashboard</h1>
-                <p>Current conditions</p>
-            </div>
-
-            <div class="weather-grid">
-                <div class="weather-card">
-                    <div class="weather-icon">🌡️</div>
-                    <div class="weather-value">25.3°C</div>
-                    <div class="weather-label">Temperature</div>
-                    <div class="weather-status status-optimal">Optimal Range</div>
-                </div>
-
-                <div class="weather-card">
-                    <div class="weather-icon">💧</div>
-                    <div class="weather-value">67%</div>
-                    <div class="weather-label">Humidity</div>
-                    <div class="weather-status status-increase">+2% from yesterday</div>
-                </div>
-
-                <div class="weather-card">
-                    <div class="weather-icon">🌪️</div>
-                    <div class="weather-value">1029</div>
-                    <div class="weather-label">Pressure (hPa)</div>
-                    <div class="weather-status status-normal">Normal</div>
-                </div>
-
-                <div class="weather-card">
-                    <div class="weather-icon">🍃</div>
-                    <div class="weather-value">Good</div>
-                    <div class="weather-label">Air Quality</div>
-                    <div class="weather-status status-good">No issues</div>
+                <h1>
+                    <span class="status-indicator"></span>
+                    Smart Onion Storage Dashboard
+                </h1>
+                <div class="user-info">
+                    <span id="currentTime"></span>
+                    <span>Welcome, <strong id="currentUser"></strong></span>
+                    <button class="logout-btn" onclick="logout()">Logout</button>
                 </div>
             </div>
 
-            <div style="text-align: center;">
-                <p style="color: rgba(255,255,255,0.7); margin-bottom: 15px;">Last updated: Just now</p>
-                <button class="refresh-btn" onclick="refreshData()">Refresh Data</button>
-            </div>
-        </div>
-
-        <!-- Settings Page -->
-        <div class="page" id="settings">
-            <div class="settings-container">
-                <h1 class="settings-title">Settings</h1>
+            <!-- Stats Grid -->
+            <div class="stats-grid">
+                <div class="stat-card temperature">
+                    <div class="stat-icon">🌡</div>
+                    <div class="stat-value" id="temperature">24.5°C</div>
+                    <div class="stat-label">Temperature</div>
+                    <div class="stat-trend trend-stable">Optimal Range</div>
+                </div>
                 
-                <div class="setting-item">
-                    <div class="setting-info">
-                        <h3>Notifications</h3>
-                        <p>Weather alerts and updates</p>
-                    </div>
-                    <div class="toggle-switch active" onclick="toggleSetting(this)">
-                        <div class="toggle-slider"></div>
-                    </div>
+                <div class="stat-card humidity">
+                    <div class="stat-icon">💧</div>
+                    <div class="stat-value" id="humidity">68%</div>
+                    <div class="stat-label">Humidity</div>
+                    <div class="stat-trend trend-up">+2% from yesterday</div>
                 </div>
-
-                <div class="setting-item">
-                    <div class="setting-info">
-                        <h3>Auto Refresh</h3>
-                        <p>Update data automatically</p>
-                    </div>
-                    <div class="toggle-switch active" onclick="toggleSetting(this)">
-                        <div class="toggle-slider"></div>
-                    </div>
+                
+                <div class="stat-card pressure">
+                    <div class="stat-icon">🌪</div>
+                    <div class="stat-value" id="pressure">1013</div>
+                    <div class="stat-label">Pressure (hPa)</div>
+                    <div class="stat-trend trend-stable">Normal</div>
                 </div>
-
-                <div class="setting-item">
-                    <div class="setting-info">
-                        <h3>Dark Mode</h3>
-                        <p>Use dark theme</p>
-                    </div>
-                    <div class="toggle-switch" onclick="toggleSetting(this)">
-                        <div class="toggle-slider"></div>
-                    </div>
+                
+                <div class="stat-card air-quality">
+                    <div class="stat-icon">🍃</div>
+                    <div class="stat-value" id="airQuality">Good</div>
+                    <div class="stat-label">Air Quality</div>
+                    <div class="stat-trend trend-stable">No issues</div>
                 </div>
+            </div>
 
-                <div class="setting-item">
-                    <div class="setting-info">
-                        <h3>Location Services</h3>
-                        <p>Use GPS for accurate weather</p>
+            <!-- Controls Section -->
+            <div class="controls-section">
+                <h2>🎛 Device Controls</h2>
+                <div class="controls-grid">
+                    <div class="control-item">
+                        <span class="control-label">Cooling Fan</span>
+                        <div class="toggle-switch active" onclick="toggleDevice(this, 'fan')"></div>
                     </div>
-                    <div class="toggle-switch active" onclick="toggleSetting(this)">
-                        <div class="toggle-slider"></div>
+                    <div class="control-item">
+                        <span class="control-label">Peltier Cooler</span>
+                        <div class="toggle-switch" onclick="toggleDevice(this, 'peltier')"></div>
+                    </div>
+                    <div class="control-item">
+                        <span class="control-label">Heating Element</span>
+                        <div class="toggle-switch" onclick="toggleDevice(this, 'heater')"></div>
+                    </div>
+                    <div class="control-item">
+                        <span class="control-label">Exhaust Fan</span>
+                        <div class="toggle-switch" onclick="toggleDevice(this, 'exhaust')"></div>
+                    </div>
+                    <div class="control-item">
+                        <span class="control-label">Auto Mode</span>
+                        <div class="toggle-switch active" onclick="toggleDevice(this, 'auto')"></div>
+                    </div>
+                    <div class="control-item">
+                        <span class="control-label">Alerts</span>
+                        <div class="toggle-switch active" onclick="toggleDevice(this, 'alerts')"></div>
                     </div>
                 </div>
             </div>
-        </div>
 
-        <!-- Profile Page -->
-        <div class="page" id="profile">
-            <div class="profile-container">
-                <div class="profile-avatar">👤</div>
-                
-                <div class="profile-info">
-                    <h2 class="profile-name">John Doe</h2>
-                    <p class="profile-email">john.doe@email.com</p>
-                    
-                    <div class="profile-stats">
-                        <div class="stat-item">
-                            <h3>127</h3>
-                            <p>Days Active</p>
-                        </div>
-                        <div class="stat-item">
-                            <h3>24°C</h3>
-                            <p>Avg Temp</p>
+            <!-- Chart Container -->
+            <div class="chart-container">
+                <h2>📊 24-Hour Trend</h2>
+                <div class="chart">
+                    <div class="chart-placeholder">
+                        <div>📈</div>
+                        <div>Real-time sensor data chart</div>
+                        <div style="font-size: 0.9em; margin-top: 10px;">Temperature and Humidity trends over time</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Alerts Section -->
+            <div class="alerts-section">
+                <h2>🔔 Recent Alerts & Notifications</h2>
+                <div id="alertsContainer">
+                    <div class="alert-item alert-success">
+                        <div class="alert-icon">✅</div>
+                        <div class="alert-content">
+                            <div class="alert-title">System Status: Normal</div>
+                            <div class="alert-time">All sensors functioning properly - 2 minutes ago</div>
                         </div>
                     </div>
+                    <div class="alert-item alert-warning">
+                        <div class="alert-icon">⚠</div>
+                        <div class="alert-content">
+                            <div class="alert-title">Humidity Level Alert</div>
+                            <div class="alert-time">Humidity reached 72% - Auto exhaust activated - 15 minutes ago</div>
+                        </div>
+                    </div>
+                    <div class="alert-item alert-success">
+                        <div class="alert-icon">❄</div>
+                        <div class="alert-content">
+                            <div class="alert-title">Cooling System Activated</div>
+                            <div class="alert-time">Temperature control engaged - 1 hour ago</div>
+                        </div>
+                    </div>
                 </div>
-
-                <button class="refresh-btn" onclick="showPage('settings')">Edit Profile</button>
             </div>
         </div>
     </div>
 
     <script>
-        function showPage(pageId) {
-            // Hide all pages
-            document.querySelectorAll('.page').forEach(page => {
-                page.classList.remove('active');
-            });
-            
-            // Show selected page
-            document.getElementById(pageId).classList.add('active');
-            
-            // Update navigation
-            document.querySelectorAll('.nav-btn').forEach(btn => {
-                btn.classList.remove('active');
-            });
-            event.target.classList.add('active');
-        }
+        // User credentials (In production, this should be handled server-side)
+        const users = {
+            'admin': { password: 'admin123', role: 'Administrator' },
+            'farmer': { password: 'farmer123', role: 'Farmer' }
+        };
 
-        function login() {
-            // Hide login page and show navigation
-            document.getElementById('login').classList.remove('active');
-            document.getElementById('navigation').style.display = 'flex';
-            document.getElementById('dashboard').classList.add('active');
-        }
+        // Current user
+        let currentUser = null;
 
+        // Device states
+        let deviceStates = {
+            fan: true,
+            peltier: false,
+            heater: false,
+            exhaust: false,
+            auto: true,
+            alerts: true
+        };
+
+        // Sensor data simulation
+        let sensorData = {
+            temperature: 24.5,
+            humidity: 68,
+            pressure: 1013,
+            airQuality: 'Good'
+        };
+
+        // Login functionality
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            const loginText = document.getElementById('loginText');
+            const loginLoader = document.getElementById('loginLoader');
+            const errorMessage = document.getElementById('errorMessage');
+            
+            // Hide error message and show loading
+            errorMessage.style.display = 'none';
+            loginText.style.display = 'none';
+            loginLoader.style.display = 'inline-block';
+            
+            // Simulate API call delay
+            setTimeout(() => {
+                if (users[username] && users[username].password === password) {
+                    // Successful login
+                    currentUser = { username, role: users[username].role };
+                    document.getElementById('currentUser').textContent = username;
+                    document.getElementById('loginPage').style.display = 'none';
+                    document.getElementById('dashboard').style.display = 'block';
+                    startRealTimeUpdates();
+                } else {
+                    // Failed login
+                    errorMessage.style.display = 'block';
+                    loginText.style.display = 'inline';
+                    loginLoader.style.display = 'none';
+                }
+            }, 1500);
+        });
+
+        // Logout functionality
         function logout() {
-            // Show login page and hide navigation
-            document.getElementById('navigation').style.display = 'none';
-            document.querySelectorAll('.page').forEach(page => {
-                page.classList.remove('active');
-            });
-            document.getElementById('login').classList.add('active');
+            currentUser = null;
+            document.getElementById('loginPage').style.display = 'flex';
+            document.getElementById('dashboard').style.display = 'none';
+            document.getElementById('username').value = '';
+            document.getElementById('password').value = '';
+            document.getElementById('loginText').style.display = 'inline';
+            document.getElementById('loginLoader').style.display = 'none';
+            stopRealTimeUpdates();
         }
 
-        function refreshData() {
-            // Add refresh animation
-            const cards = document.querySelectorAll('.weather-card');
-            cards.forEach((card, index) => {
-                card.style.animation = 'none';
-                setTimeout(() => {
-                    card.style.animation = `fadeInUp 0.6s ease-out ${index * 0.1}s both`;
-                }, 10);
-            });
-        }
-
-        function toggleSetting(element) {
+        // Toggle device state
+        function toggleDevice(element, device) {
             element.classList.toggle('active');
+            deviceStates[device] = !deviceStates[device];
+            
+            // Add visual feedback
+            element.style.transform = 'scale(0.95)';
+            setTimeout(() => {
+                element.style.transform = 'scale(1)';
+            }, 150);
+            
+            // Simulate API call to ESP32
+          console.log(`Device ${device} turned ${deviceStates[device] ? 'ON' : 'OFF'}`);
+
+// Add alert for device state change
+addAlert(`Device Control: ${device.charAt(0).toUpperCase() + device.slice(1)} ${deviceStates[device] ? 'activated' : 'deactivated'}`, 'success');
         }
 
-        // Interactive card effects
+        // Add alert to the alerts container
+        function addAlert(message, type) {
+            const alertsContainer = document.getElementById('alertsContainer');
+            const alertItem = document.createElement('div');
+            alertItem.className = `alert-item alert-${type}`;
+            
+            const iconMap = {
+                'success': '✅',
+                'warning': '⚠',
+                'danger': '❌'
+            };
+            
+            alertItem.innerHTML = `
+                <div class="alert-icon">${iconMap[type]}</div>
+                <div class="alert-content">
+                    <div class="alert-title">${message}</div>
+                    <div class="alert-time">Just now</div>
+                </div>
+            `;
+            
+            alertsContainer.insertBefore(alertItem, alertsContainer.firstChild);
+            
+            // Remove old alerts (keep only 5)
+            while (alertsContainer.children.length > 5) {
+                alertsContainer.removeChild(alertsContainer.lastChild);
+            }
+        }
+
+        // Simulate real-time sensor data updates
+        let updateInterval;
+        
+        function startRealTimeUpdates() {
+            updateCurrentTime();
+            updateInterval = setInterval(() => {
+                updateSensorData();
+                updateCurrentTime();
+            }, 3000); // Update every 3 seconds
+        }
+        
+        function stopRealTimeUpdates() {
+            if (updateInterval) {
+                clearInterval(updateInterval);
+            }
+        }
+        
+        function updateCurrentTime() {
+            const now = new Date();
+            const timeString = now.toLocaleString('en-IN', {
+                timeZone: 'Asia/Kolkata',
+                year: 'numeric',
+                month: 'short',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit'
+            });
+            document.getElementById('currentTime').textContent = timeString;
+        }
+        
+        function updateSensorData() {
+            // Simulate realistic sensor data variations
+            sensorData.temperature += (Math.random() - 0.5) * 2;
+            sensorData.humidity += (Math.random() - 0.5) * 4;
+            sensorData.pressure += (Math.random() - 0.5) * 10;
+            
+            // Keep values in realistic ranges
+            sensorData.temperature = Math.max(0, Math.min(40, sensorData.temperature));
+            sensorData.humidity = Math.max(30, Math.min(90, sensorData.humidity));
+            sensorData.pressure = Math.max(990, Math.min(1030, sensorData.pressure));
+            
+            // Update display
+            document.getElementById('temperature').textContent = sensorData.temperature.toFixed(1) + '°C';
+            document.getElementById('humidity').textContent = Math.round(sensorData.humidity) + '%';
+            document.getElementById('pressure').textContent = Math.round(sensorData.pressure);
+            
+            // Check for alerts
+            if (sensorData.temperature > 30) {
+                addAlert('High Temperature Alert: ' + sensorData.temperature.toFixed(1) + '°C detected', 'warning');
+            }
+            
+            if (sensorData.humidity > 75) {
+                addAlert('High Humidity Alert: ' + Math.round(sensorData.humidity) + '% detected', 'warning');
+            }
+            
+            if (sensorData.temperature < 5) {
+                addAlert('Low Temperature Alert: ' + sensorData.temperature.toFixed(1) + '°C detected', 'danger');
+            }
+        }
+
+        // Initialize on page load
         document.addEventListener('DOMContentLoaded', function() {
-            document.querySelectorAll('.weather-card').forEach(card => {
-                card.addEventListener('click', function() {
-                    this.style.transform = 'scale(0.95)';
-                    setTimeout(() => {
-                        this.style.transform = '';
-                    }, 150);
-                });
+            // Focus on username field
+            document.getElementById('username').focus();
+            
+            // Add enter key support for login
+            document.getElementById('password').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    document.getElementById('loginForm').dispatchEvent(new Event('submit'));
+                }
             });
         });
+
+        // Simulate ESP32 WebSocket connection (In production, connect to actual ESP32)
+        function simulateWebSocketConnection() {
+            // This would connect to your ESP32's WebSocket server
+            // const ws = new WebSocket('ws://192.168.1.100:81/');
+            
+            // ws.onmessage = function(event) {
+            //     const data = JSON.parse(event.data);
+            //     updateSensorData(data);
+            // };
+            
+            console.log('WebSocket connection simulation active');
+        }
+
+        // API functions for ESP32 communication (examples)
+        function sendCommand(device, state) {
+            // In production, send HTTP request to ESP32
+            // fetch(http://192.168.1.100/api/device/${device}, {
+            //     method: 'POST',
+            //     headers: { 'Content-Type': 'application/json' },
+            //     body: JSON.stringify({ state: state })
+            // });
+            
+            console.log(`API Call: ${device} -> ${state}`);
+        }
+
+        function getDeviceStatus() {
+            // In production, fetch current device states from ESP32
+            // fetch('http://192.168.1.100/api/status')
+            //     .then(response => response.json())
+            //     .then(data => updateDeviceStates(data));
+            
+            console.log('Device status check');
+        }
     </script>
 </body>
 </html>
