@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weather App - Complete</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .container {
+            max-width: 400px;
+            margin: 0 auto;
+            padding: 20px 15px;
+        }
+
+        /* Page System */
+        .page {
+            display: none;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        .page.active {
+            display: block;
+        }
+
+        /* Navigation */
+        .nav-bar {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 25px;
+            padding: 10px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-around;
+            position: sticky;
+            top: 20px;
+            z-index: 100;
+        }
+
+        .nav-btn {
+            background: none;
+            border: none;
+            color: rgba(255, 255, 255, 0.7);
+            padding: 10px 15px;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+        }
+
+        .nav-btn.active, .nav-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+        }
+
+        /* Login Page */
+        .login-container {
+            text-align: center;
+            padding: 40px 20px;
+        }
+
+        .login-title {
+            color: white;
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            font-weight: 300;
+        }
+
+        .login-subtitle {
+            color: rgba(255, 255, 255, 0.8);
+            margin-bottom: 40px;
+            font-size: 1rem;
+        }
+
+        .login-form {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        .form-label {
+            color: white;
+            font-size: 0.9rem;
+            margin-bottom: 8px;
+            display: block;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 12px 15px;
+            border: none;
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.9);
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .form-input:focus {
+            outline: none;
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
+        }
+
+        .login-btn {
+            width: 100%;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            border: none;
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .login-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Dashboard Styles */
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            animation: fadeInDown 0.8s ease-out;
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            color: white;
+            margin-bottom: 10px;
+            font-weight: 300;
+        }
+
+        .header p {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 1rem;
+        }
+
+        /* Mobile 2x2 Weather Grid */
+        .weather-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .weather-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 20px 15px;
+            text-align: center;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            animation: fadeInUp 0.8s ease-out;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .weather-card:nth-child(1) { animation-delay: 0.1s; }
+        .weather-card:nth-child(2) { animation-delay: 0.2s; }
+        .weather-card:nth-child(3) { animation-delay: 0.3s; }
+        .weather-card:nth-child(4) { animation-delay: 0.4s; }
+
+        .weather-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        .weather-icon {
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+            display: block;
+        }
+
+        .weather-value {
+            font-size: 1.8rem;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 8px;
+        }
+
+        .weather-label {
+            font-size: 0.75rem;
+            color: #999;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 10px;
+            font-weight: 500;
+        }
+
+        .weather-status {
+            font-size: 0.8rem;
+            padding: 4px 12px;
+            border-radius: 15px;
+            font-weight: 500;
+        }
+
+        .status-optimal {
+            background: rgba(33, 150, 243, 0.1);
+            color: #2196f3;
+        }
+
+        .status-increase {
+            background: rgba(76, 175, 80, 0.1);
+            color: #4caf50;
+        }
+
+        .status-normal {
+            background: rgba(33, 150, 243, 0.1);
+            color: #2196f3;
+        }
+
+        .status-good {
+            background: rgba(76, 175, 80, 0.1);
+            color: #4caf50;
+        }
+
+        /* Settings Page */
+        .settings-container {
+            color: white;
+        }
+
+        .settings-title {
+            font-size: 2rem;
+            margin-bottom: 30px;
+            text-align: center;
+            font-weight: 300;
+        }
+
+        .setting-item {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .setting-info h3 {
+            font-size: 1.1rem;
+            margin-bottom: 5px;
+        }
+
+        .setting-info p {
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+
+        .toggle-switch {
+            width: 50px;
+            height: 25px;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 25px;
+            position: relative;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .toggle-switch.active {
+            background: #4caf50;
+        }
+
+        .toggle-slider {
+            width: 21px;
+            height: 21px;
+            background: white;
+            border-radius: 50%;
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            transition: all 0.3s ease;
+        }
+
+        .toggle-switch.active .toggle-slider {
+            left: 27px;
+        }
+
+        /* Profile Page */
+        .profile-container {
+            color: white;
+            text-align: center;
+        }
+
+        .profile-avatar {
+            width: 100px;
+            height: 100px;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            border-radius: 50%;
+            margin: 0 auto 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5rem;
+            color: white;
+        }
+
+        .profile-info {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 20px;
+        }
+
+        .profile-name {
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+        }
+
+        .profile-email {
+            opacity: 0.8;
+            margin-bottom: 20px;
+        }
+
+        .profile-stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            text-align: center;
+        }
+
+        .stat-item h3 {
+            font-size: 1.5rem;
+            color: #4fc3f7;
+        }
+
+        .stat-item p {
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+
+        .refresh-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 25px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            margin-top: 15px;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .refresh-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 480px) {
+            .container {
+                padding: 15px 10px;
+            }
+            
+            .weather-grid {
+                gap: 12px;
+            }
+            
+            .weather-card {
+                padding: 15px 10px;
+            }
+            
+            .weather-value {
+                font-size: 1.6rem;
+            }
+            
+            .weather-icon {
+                font-size: 2rem;
+                margin-bottom: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Navigation (hidden on login) -->
+        <nav class="nav-bar" id="navigation" style="display: none;">
+            <button class="nav-btn active" onclick="showPage('dashboard')">🏠 Home</button>
+            <button class="nav-btn" onclick="showPage('settings')">⚙️ Settings</button>
+            <button class="nav-btn" onclick="showPage('profile')">👤 Profile</button>
+            <button class="nav-btn" onclick="logout()">🚪 Logout</button>
+        </nav>
+
+        <!-- Login Page -->
+        <div class="page active" id="login">
+            <div class="login-container">
+                <h1 class="login-title">Weather App</h1>
+                <p class="login-subtitle">Your personal weather companion</p>
+                
+                <div class="login-form">
+                    <div class="form-group">
+                        <label class="form-label">Email</label>
+                        <input type="email" class="form-input" placeholder="Enter your email" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Password</label>
+                        <input type="password" class="form-input" placeholder="Enter your password" required>
+                    </div>
+                    
+                    <button class="login-btn" onclick="login()">Sign In</button>
+                </div>
+                
+                <p style="color: rgba(255,255,255,0.7); font-size: 0.9rem;">
+                    Demo: Use any email/password to continue
+                </p>
+            </div>
+        </div>
+
+        <!-- Dashboard Page -->
+        <div class="page" id="dashboard">
+            <div class="header">
+                <h1>Weather Dashboard</h1>
+                <p>Current conditions</p>
+            </div>
+
+            <div class="weather-grid">
+                <div class="weather-card">
+                    <div class="weather-icon">🌡️</div>
+                    <div class="weather-value">25.3°C</div>
+                    <div class="weather-label">Temperature</div>
+                    <div class="weather-status status-optimal">Optimal Range</div>
+                </div>
+
+                <div class="weather-card">
+                    <div class="weather-icon">💧</div>
+                    <div class="weather-value">67%</div>
+                    <div class="weather-label">Humidity</div>
+                    <div class="weather-status status-increase">+2% from yesterday</div>
+                </div>
+
+                <div class="weather-card">
+                    <div class="weather-icon">🌪️</div>
+                    <div class="weather-value">1029</div>
+                    <div class="weather-label">Pressure (hPa)</div>
+                    <div class="weather-status status-normal">Normal</div>
+                </div>
+
+                <div class="weather-card">
+                    <div class="weather-icon">🍃</div>
+                    <div class="weather-value">Good</div>
+                    <div class="weather-label">Air Quality</div>
+                    <div class="weather-status status-good">No issues</div>
+                </div>
+            </div>
+
+            <div style="text-align: center;">
+                <p style="color: rgba(255,255,255,0.7); margin-bottom: 15px;">Last updated: Just now</p>
+                <button class="refresh-btn" onclick="refreshData()">Refresh Data</button>
+            </div>
+        </div>
+
+        <!-- Settings Page -->
+        <div class="page" id="settings">
+            <div class="settings-container">
+                <h1 class="settings-title">Settings</h1>
+                
+                <div class="setting-item">
+                    <div class="setting-info">
+                        <h3>Notifications</h3>
+                        <p>Weather alerts and updates</p>
+                    </div>
+                    <div class="toggle-switch active" onclick="toggleSetting(this)">
+                        <div class="toggle-slider"></div>
+                    </div>
+                </div>
+
+                <div class="setting-item">
+                    <div class="setting-info">
+                        <h3>Auto Refresh</h3>
+                        <p>Update data automatically</p>
+                    </div>
+                    <div class="toggle-switch active" onclick="toggleSetting(this)">
+                        <div class="toggle-slider"></div>
+                    </div>
+                </div>
+
+                <div class="setting-item">
+                    <div class="setting-info">
+                        <h3>Dark Mode</h3>
+                        <p>Use dark theme</p>
+                    </div>
+                    <div class="toggle-switch" onclick="toggleSetting(this)">
+                        <div class="toggle-slider"></div>
+                    </div>
+                </div>
+
+                <div class="setting-item">
+                    <div class="setting-info">
+                        <h3>Location Services</h3>
+                        <p>Use GPS for accurate weather</p>
+                    </div>
+                    <div class="toggle-switch active" onclick="toggleSetting(this)">
+                        <div class="toggle-slider"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Profile Page -->
+        <div class="page" id="profile">
+            <div class="profile-container">
+                <div class="profile-avatar">👤</div>
+                
+                <div class="profile-info">
+                    <h2 class="profile-name">John Doe</h2>
+                    <p class="profile-email">john.doe@email.com</p>
+                    
+                    <div class="profile-stats">
+                        <div class="stat-item">
+                            <h3>127</h3>
+                            <p>Days Active</p>
+                        </div>
+                        <div class="stat-item">
+                            <h3>24°C</h3>
+                            <p>Avg Temp</p>
+                        </div>
+                    </div>
+                </div>
+
+                <button class="refresh-btn" onclick="showPage('settings')">Edit Profile</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function showPage(pageId) {
+            // Hide all pages
+            document.querySelectorAll('.page').forEach(page => {
+                page.classList.remove('active');
+            });
+            
+            // Show selected page
+            document.getElementById(pageId).classList.add('active');
+            
+            // Update navigation
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+        }
+
+        function login() {
+            // Hide login page and show navigation
+            document.getElementById('login').classList.remove('active');
+            document.getElementById('navigation').style.display = 'flex';
+            document.getElementById('dashboard').classList.add('active');
+        }
+
+        function logout() {
+            // Show login page and hide navigation
+            document.getElementById('navigation').style.display = 'none';
+            document.querySelectorAll('.page').forEach(page => {
+                page.classList.remove('active');
+            });
+            document.getElementById('login').classList.add('active');
+        }
+
+        function refreshData() {
+            // Add refresh animation
+            const cards = document.querySelectorAll('.weather-card');
+            cards.forEach((card, index) => {
+                card.style.animation = 'none';
+                setTimeout(() => {
+                    card.style.animation = `fadeInUp 0.6s ease-out ${index * 0.1}s both`;
+                }, 10);
+            });
+        }
+
+        function toggleSetting(element) {
+            element.classList.toggle('active');
+        }
+
+        // Interactive card effects
+        document.addEventListener('DOMContentLoaded', function() {
+            document.querySelectorAll('.weather-card').forEach(card => {
+                card.addEventListener('click', function() {
+                    this.style.transform = 'scale(0.95)';
+                    setTimeout(() => {
+                        this.style.transform = '';
+                    }, 150);
+                });
+            });
+        });
+    </script>
+</body>
+</html>
